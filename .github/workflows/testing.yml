@@ -42,7 +42,7 @@ jobs:
       - name: Install Dependencies
         shell: bash -el {0}
         run: |
-          pip install tox-conda
+          python -m pip install tox tox-gh-actions
       - name: Run Tests
         shell: bash -el {0}
         run: |
