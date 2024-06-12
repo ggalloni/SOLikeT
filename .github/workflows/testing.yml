@@ -2,7 +2,7 @@ name: Testing
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, dev-setuptools ]
   pull_request:
     branches: [ master ]
 
