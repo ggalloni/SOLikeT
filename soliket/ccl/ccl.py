@@ -81,7 +81,8 @@ the likelihood.
 from collections.abc import Sequence
 
 import numpy as np
-from cobaya.theory import Theory
+from typing import Dict, Sequence
+from cobaya.theory import Provider, Theory
 from cobaya.tools import LoggedError
 
 
@@ -94,6 +95,7 @@ class CCL(Theory):
     kmax: float
     z: np.ndarray
     nonlinear: bool
+    provider: Provider
 
     def initialize(self) -> None:
         try:
@@ -148,7 +150,7 @@ class CCL(Theory):
         )
 
         # Dictionary of the things CCL needs from CAMB/CLASS
-        needs = {}
+        needs: Dict[str, dict] = {}
 
         if self.kmax:
             self.nonlinear = self.nonlinear or options.get("nonlinear", False)

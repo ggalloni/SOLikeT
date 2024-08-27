@@ -8,6 +8,8 @@ Based on the original xcorr code [1]_ used in Krolewski et al (2021) [2]_.
 
 """
 
+from typing import Optional, Tuple
+from cobaya.theory import Provider
 import numpy as np
 import sacc
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
@@ -59,6 +61,8 @@ class XcorrLikelihood(GaussianLikelihood):
         Magnification bias slope for the galaxy sample.
 
     """
+
+    provider: Provider
 
     def initialize(self):
         self.name: str = "Xcorr"
@@ -135,15 +139,17 @@ class XcorrLikelihood(GaussianLikelihood):
             "ns": None,
         }
 
-    def _bin(self, theory_cl, lmin, lmax):
-        binned_theory_cl = np.zeros_like(lmin)
+    def _bin(
+        self, theory_cl: np.ndarray, lmin: np.ndarray, lmax: np.ndarray
+    ) -> np.ndarray:
+        binned_theory_cl: np.ndarray = np.zeros_like(lmin)
         for i in range(len(lmin)):
             binned_theory_cl[i] = np.mean(
                 theory_cl[(self.ell_range >= lmin[i]) & (self.ell_range < lmax[i])]
             )
         return binned_theory_cl
 
-    def _get_sacc_data(self, **params_values):
+    def _get_sacc_data(self, **params_values: dict) -> dict:
         data_sacc = sacc.Sacc.load_fits(self.datapath)
 
         # TODO: would be better to use keep_selection
@@ -172,7 +178,11 @@ class XcorrLikelihood(GaussianLikelihood):
 
         return data
 
-    def _get_data(self, **params_values):
+
+    def _get_data(
+        self, **params_values: dict
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+
         data_auto = np.loadtxt(self.auto_file)
         data_cross = np.loadtxt(self.cross_file)
 
@@ -191,7 +201,8 @@ class XcorrLikelihood(GaussianLikelihood):
 
         return x, y, dy
 
-    def _setup_chi(self):
+    def _setup_chi(self) -> dict:
+
         chival = self.provider.get_comoving_radial_distance(self.zarray)
         zatchi = Spline(chival, self.zarray)
         chiatz = Spline(self.zarray, chival)
@@ -220,7 +231,8 @@ class XcorrLikelihood(GaussianLikelihood):
 
         return chi_result
 
-    def _get_theory(self, **params_values):
+    def _get_theory(self, **params_values: dict) -> np.ndarray:
+
         setup_chi_out = self._setup_chi()
 
         Pk_interpolator = self.provider.get_Pk_interpolator(
