@@ -8,13 +8,13 @@ Based on the original xcorr code [1]_ used in Krolewski et al (2021) [2]_.
 
 """
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 from cobaya.theory import Provider
 import numpy as np
 import sacc
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 
-from soliket import utils
+from soliket.utils import binner, check_yaml_types
 from soliket.gaussian import GaussianData, GaussianLikelihood
 
 from .limber import do_limber
@@ -61,6 +61,19 @@ class XcorrLikelihood(GaussianLikelihood):
         Magnification bias slope for the galaxy sample.
 
     """
+    auto_file: Optional[str]
+    cross_file: Optional[str]
+    dndz_file: Optional[str]
+    datapath: Optional[str]
+    k_tracer_name: Optional[str]
+    gc_tracer_name: Optional[str]
+    high_ell: int
+    nz: int
+    Nchi: int
+    Nchi_mag: int
+    Pk_interp_kmax: Union[int, float]
+    b1: Union[int, float]
+    s1: Union[int, float]
 
     provider: Provider
 
@@ -68,12 +81,26 @@ class XcorrLikelihood(GaussianLikelihood):
         self.name: str = "Xcorr"
         self.log.info("Initialising.")
 
-        self.dndz_file: str | None = None
-        self.auto_file: str | None = None
-        self.cross_file: str | None = None
-        self.k_tracer_name: str | None = None
-        self.gc_tracer_name: str | None = None
         self.covpath: str | None = None
+
+        check_yaml_types(self, {
+            "auto_file": str,
+            "cross_file": str,
+            "dndz_file": str,
+            "datapath": str,
+            "k_tracer_name": str,
+            "gc_tracer_name": str,
+            "high_ell": int,
+            "nz": int,
+            "Nchi": int,
+            "Nchi_mag": int,
+            "Pk_interp_kmax": (int, float),
+            "b1": (int, float),
+            "s1": (int, float)
+        })
+
+        name: str = "Xcorr"  # noqa F841
+        self.log.info('Initialising.')
 
         if self.datapath is None:
             self.dndz = np.loadtxt(self.dndz_file)
@@ -262,10 +289,8 @@ class XcorrLikelihood(GaussianLikelihood):
         # but there needs to be a consistent way to specify it
         bin_edges = np.linspace(20, self.high_ell, self.data.x.shape[0] // 2 + 1)
 
-        ell_gg, clobs_gg = utils.binner(self.ell_range, cl_gg, bin_edges)
-        ell_kappag, clobs_kappag = utils.binner(self.ell_range, cl_kappag, bin_edges)
-        # ell_kappakappa, clobs_kappakappa = utils.binner(
-        #   self.ell_range, cl_kappakappa, bin_edges
-        # )
+        ell_gg, clobs_gg = binner(self.ell_range, cl_gg, bin_edges)
+        ell_kappag, clobs_kappag = binner(self.ell_range, cl_kappag, bin_edges)
+        #ell_kappakappa, clobs_kappakappa = binner(self.ell_range, cl_kappakappa, bin_edges) # noqa E501
 
         return np.concatenate([clobs_gg, clobs_kappag])

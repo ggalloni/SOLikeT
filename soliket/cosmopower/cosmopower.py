@@ -93,11 +93,14 @@ information on how SOLikeT infers these values.
 
 import os
 from collections.abc import Iterable
+from typing import Dict, List
 
 import numpy as np
 from cobaya.log import LoggedError
 from cobaya.theories.cosmo import BoltzmannBase
 from cobaya.theory import Theory
+
+from soliket.utils import check_yaml_types
 
 try:
     import cosmopower as cp
@@ -109,6 +112,14 @@ class CosmoPower(BoltzmannBase):
     """A CosmoPower Network wrapper for Cobaya."""
 
     def initialize(self) -> None:
+        check_yaml_types(self, {
+            "network_path": str,
+            "network_settings": dict,
+            "stop_at_error": bool,
+            "renames": Dict[str, str],
+            "extra_args": dict,
+        })
+
         super().initialize()
 
         if self.network_settings is None:  # pragma: no cover
@@ -299,6 +310,9 @@ class CosmoPowerDerived(Theory):
     """A theory class that can calculate derived parameters from CosmoPower networks."""
 
     def initialize(self) -> None:
+        check_yaml_types(self, {
+            "derived_parameters": List[str],
+        })
         super().initialize()
 
         if self.network_settings is None:
