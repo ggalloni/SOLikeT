@@ -1,3 +1,6 @@
+"""
+Make sure that this returns the same result as original mflike.MFLike from LAT_MFlike repo
+"""
 import importlib
 
 from cobaya.tools import resolve_packages_path
