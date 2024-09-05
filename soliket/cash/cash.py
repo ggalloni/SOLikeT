@@ -13,6 +13,8 @@ class CashCLikelihood(Likelihood):
     name: str = "Cash-C"
     datapath: str | None
 
+    enforce_types: bool = True
+
     def initialize(self):
         x, N = self._get_data()
         self.data = CashCData(self.name, N)

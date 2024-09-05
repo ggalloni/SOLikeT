@@ -111,6 +111,8 @@ except ImportError:
 class CosmoPower(BoltzmannBase):
     """A CosmoPower Network wrapper for Cobaya."""
 
+    enforce_types: bool = True
+
     def initialize(self) -> None:
         check_yaml_types(self, {
             "network_path": str,
