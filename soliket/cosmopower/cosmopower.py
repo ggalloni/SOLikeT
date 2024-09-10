@@ -112,7 +112,7 @@ class CosmoPower(BoltzmannBase):
 
     enforce_types: bool = True
 
-    def initialize(self) -> None:
+    def initialize(self):
 
         super().initialize()
 
@@ -283,7 +283,7 @@ class CosmoPower(BoltzmannBase):
 
         return res
 
-    def get_can_support_parameters(self) -> Iterable[str]:
+    def get_can_support_parameters(self) -> List[str]:
         return self.all_parameters
 
     def get_requirements(self) -> Iterable[tuple[str, str]]:
@@ -303,7 +303,7 @@ class CosmoPower(BoltzmannBase):
 class CosmoPowerDerived(Theory):
     """A theory class that can calculate derived parameters from CosmoPower networks."""
 
-    def initialize(self) -> None:
+    def initialize(self):
         super().initialize()
 
         if self.network_settings is None:
@@ -362,7 +362,7 @@ class CosmoPowerDerived(Theory):
     def get_param(self, p) -> float:
         return self.current_state["derived"][self.translate_param(p)]
 
-    def get_can_support_parameters(self) -> Iterable[str]:
+    def get_can_support_parameters(self) -> List[str]:
         return self.input_parameters
 
     def get_requirements(self) -> Iterable[tuple[str, str]]:

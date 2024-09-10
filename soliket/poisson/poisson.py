@@ -12,7 +12,7 @@ class PoissonLikelihood(Likelihood):
 
     enforce_types: bool = True
 
-    def initialize(self) -> None:
+    def initialize(self):
         catalog = self._get_catalog()
         if self.columns is None:
             self.columns = catalog.columns
@@ -33,7 +33,7 @@ class PoissonLikelihood(Likelihood):
         """Computes and returns the integral of the rate function"""
         raise NotImplementedError
 
-    def logp(self, **params_values: dict) -> float:
+    def logp(self, **params_values) -> float:
         rate_fn = self._get_rate_fn(**params_values)
         n_expected = self._get_n_expected(**params_values)
         return self.data.loglike(rate_fn, n_expected)

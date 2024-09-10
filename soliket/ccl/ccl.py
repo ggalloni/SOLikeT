@@ -100,7 +100,7 @@ class CCL(Theory):
     _default_z_sampling[0] = 0
     provider: Provider
 
-    def initialize(self) -> None:
+    def initialize(self):
         try:
             import pyccl as ccl
         except ImportError as e:

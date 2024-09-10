@@ -176,7 +176,7 @@ class XcorrLikelihood(GaussianLikelihood):
             )
         return binned_theory_cl
 
-    def _get_sacc_data(self, **params_values: dict) -> dict:
+    def _get_sacc_data(self, **params_values) -> dict:
         data_sacc = sacc.Sacc.load_fits(self.datapath)
 
         # TODO: would be better to use keep_selection
@@ -207,7 +207,7 @@ class XcorrLikelihood(GaussianLikelihood):
 
 
     def _get_data(
-        self, **params_values: dict
+        self, **params_values
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
         data_auto = np.loadtxt(self.auto_file)
@@ -258,7 +258,7 @@ class XcorrLikelihood(GaussianLikelihood):
 
         return chi_result
 
-    def _get_theory(self, **params_values: dict) -> np.ndarray:
+    def _get_theory(self, **params_values) -> np.ndarray:
 
         setup_chi_out = self._setup_chi()
 

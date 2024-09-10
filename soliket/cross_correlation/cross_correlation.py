@@ -36,7 +36,7 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
         self._get_sacc_data()
         self._check_tracers()
 
-    def get_requirements(self) -> Dict[str, dict]:
+    def get_requirements(self) -> Dict[str, Any]:
         return {"CCL": {"kmax": 10, "nonlinear": True}, "zstar": None}
 
     def _get_CCL_results(self) -> Tuple[CCL, dict]:
@@ -74,7 +74,7 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
         z: np.ndarray,
         tracer: Any,
         tracer_name: str,
-        **params_values: dict
+        **params_values
     ) -> np.ndarray:
         if self.z_nuisance_mode == 'deltaz':
             bias = params_values[f'{tracer_name}_deltaz']
@@ -111,7 +111,7 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
         return np.concatenate(ell_eff)
 
     def _get_data(
-        self, **params_values: dict
+        self, **params_values
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         data_auto = np.loadtxt(self.auto_file)
         data_cross = np.loadtxt(self.cross_file)
@@ -140,7 +140,7 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
 
         return ells_theory, w_bins
 
-    def logp(self, **params_values: dict) -> float:
+    def logp(self, **params_values) -> float:
         theory = self._get_theory(**params_values)
         return self.data.loglike(theory)
 
@@ -152,7 +152,7 @@ class GalaxyKappaLikelihood(CrossCorrelationLikelihood):
     _allowable_tracers: ClassVar[List[str]] = ['cmb_convergence', 'galaxy_density']
     params: dict
 
-    def _get_theory(self, **params_values: dict) -> np.ndarray:
+    def _get_theory(self, **params_values) -> np.ndarray:
         ccl, cosmo = self._get_CCL_results()
 
         tracer_comb = self.sacc_data.get_tracer_combinations()
@@ -196,7 +196,7 @@ class ShearKappaLikelihood(CrossCorrelationLikelihood):
     ia_mode: Optional[str]
     params: dict
 
-    def _get_theory(self, **params_values: dict) -> np.ndarray:
+    def _get_theory(self, **params_values) -> np.ndarray:
         ccl, cosmo = self._get_CCL_results()
         cl_binned_list: List[np.ndarray] = []
 

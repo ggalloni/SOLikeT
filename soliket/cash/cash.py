@@ -25,12 +25,12 @@ class CashCLikelihood(Likelihood):
         x = data[:, :-1]
         return x, N
 
-    def _get_theory(self, **kwargs: dict) -> np.ndarray:
+    def _get_theory(self, **kwargs) -> np.ndarray:
         if "cash_test_logp" in kwargs:
             return np.arange(kwargs["cash_test_logp"])
         else:
             raise NotImplementedError
 
-    def logp(self, **params_values: dict) -> float:
+    def logp(self, **params_values) -> float:
         theory = self._get_theory(**params_values)
         return self.data.loglike(theory)

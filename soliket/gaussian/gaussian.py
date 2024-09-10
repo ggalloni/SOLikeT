@@ -21,7 +21,7 @@ class GaussianLikelihood(Likelihood):
 
     enforce_types: bool = True
 
-    def initialize(self) -> None:
+    def initialize(self):
         x, y = self._get_data()
         cov = self._get_cov()
         self.data = GaussianData(self.name, x, y, cov, self.ncovsims)
@@ -34,16 +34,16 @@ class GaussianLikelihood(Likelihood):
         cov = np.loadtxt(self.covpath)
         return cov
 
-    def _get_theory(self, **kwargs: dict) -> np.ndarray:
+    def _get_theory(self, **kwargs) -> np.ndarray:
         raise NotImplementedError
 
-    def logp(self, **params_values: dict) -> float:
+    def logp(self, **params_values) -> float:
         theory = self._get_theory(**params_values)
         return self.data.loglike(theory)
 
 
 class CrossCov(dict):
-    def save(self, path: str) -> None:
+    def save(self, path: str):
         np.savez(path, **{str(k): v for k, v in self.items()})
 
     @classmethod
@@ -71,7 +71,7 @@ class MultiGaussianLikelihood(GaussianLikelihood):
 
         super().__init__(info=default_info, **kwargs)
 
-    def initialize(self) -> None:
+    def initialize(self):
         self.cross_cov: Optional[CrossCov] = CrossCov.load(self.cross_cov_path)
 
         data_list = [like._get_gauss_data() for like in self.likelihoods]
@@ -79,7 +79,7 @@ class MultiGaussianLikelihood(GaussianLikelihood):
 
         self.log.info("Initialized.")
 
-    def initialize_with_provider(self, provider: Provider) -> None:  # pragma: no cover
+    def initialize_with_provider(self, provider: Provider):  # pragma: no cover
         for like in self.likelihoods:
             like.initialize_with_provider(provider)
         # super().initialize_with_provider(provider)
