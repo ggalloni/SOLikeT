@@ -14,7 +14,7 @@ import numpy as np
 import sacc
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 
-from soliket.utils import binner, check_yaml_types
+from soliket.utils import binner
 from soliket.gaussian import GaussianData, GaussianLikelihood
 
 from .limber import do_limber
