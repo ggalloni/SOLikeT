@@ -19,7 +19,7 @@ class GaussianLikelihood(Likelihood):
     ncovsims: Optional[int] = None
     provider: Provider
 
-    enforce_types: bool = True
+    _enforce_types: bool = True
 
     def initialize(self):
         x, y = self._get_data()
