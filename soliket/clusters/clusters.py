@@ -1,33 +1,35 @@
 """
 .. module:: clusters
 
-:Synopsis: Poisson likelihood for SZ clusters for Simons Osbervatory 
+:Synopsis: Poisson likelihood for SZ clusters for Simons Osbervatory
 :Authors: Nick Battaglia, Eunseong Lee
 
 Likelihood for unbinned tSZ galaxy cluster number counts. Currently under development and
-should be used only with caution and advice. Uses the SZ scaling relations from 
-Hasselfield et al (2013) [1]_ to compare observed number of :math:`y`-map detections 
+should be used only with caution and advice. Uses the SZ scaling relations from
+Hasselfield et al (2013) [1]_ to compare observed number of :math:`y`-map detections
 with the prediction from a Tinker [2]_ Halo Mass Function.
 
 References
 ----------
-.. [1] Hasselfield et al, JCAP 07, 008 (2013) `arXiv:1301.0816 
+.. [1] Hasselfield et al, JCAP 07, 008 (2013) `arXiv:1301.0816
                                                 <https://arxiv.org/abs/1301.0816>`_
-.. [2] Tinker et al, Astrophys. J. 688, 2, 709 (2008) `arXiv:0803.2706 
+.. [2] Tinker et al, Astrophys. J. 688, 2, 709 (2008) `arXiv:0803.2706
                                                     <https://arxiv.org/abs/0803.2706>`_
-
+p
 """
+
+import os
+
 import numpy as np
 import pandas as pd
+from cobaya import LoggedError
 from scipy.interpolate import interp1d
-from pkg_resources import resource_filename
 
-import pyccl as ccl
+from soliket.clusters import massfunc as mf
+from soliket.poisson import PoissonLikelihood
 
-from ..poisson import PoissonLikelihood
-from . import massfunc as mf
 from .survey import SurveyData
-from .sz_utils import szutils
+from .sz_utils import SZUtils, trapezoid
 
 C_KM_S = 2.99792e5
 
@@ -40,27 +42,39 @@ class ClusterLikelihood(PoissonLikelihood):
     """
     Poisson Likelihood for un-binned :math:`y`-map galaxy cluster counts.
     """
+
     name = "Clusters"
     columns = ["tsz_signal", "z", "tsz_signal_err"]
-    data_path = resource_filename("soliket", "clusters/data/selFn_equD56")
-    # data_path = resource_filename("soliket", "clusters/data/selFn_SO")
-    data_name = resource_filename("soliket", "clusters/data/E-D56Clusters.fits")
+
     # data_name = resource_filename("soliket",
     #                   "clusters/data/MFMF_WebSkyHalos_A10tSZ_3freq_tiles_mass.fits")
 
     def initialize(self):
+        self.data_path = self.data_path or os.path.join(
+            self.get_class_path(), "data", "selFn_equD56"
+        )
+        self.data_name = os.path.join(self.get_class_path(), "data", "E-D56Clusters.fits")
+
         self.zarr = np.arange(0, 2, 0.05)
         self.k = np.logspace(-4, np.log10(5), 200)
-        # self.mdef = ccl.halos.MassDef(500, 'critical')
+        # self.mdef = self.ccl.halos.MassDef(500, 'critical')
 
+        try:
+            import pyccl as ccl
+        except ImportError:
+            raise LoggedError(
+                self.log, "Could not import ccl. Install pyccl to use ClusterLikelihood."
+            )
+        else:
+            self.ccl = ccl
         super().initialize()
 
     def get_requirements(self):
         """
-        This likelihood require :math:`P(k,z)`, :math:`H(z)`, :math:`d_A(z)`, 
+        This likelihood require :math:`P(k,z)`, :math:`H(z)`, :math:`d_A(z)`,
         :math:`r(z)` (co-moving radial distance) from Theory codes.
 
-        :return: Dictionary of requirements 
+        :return: Dictionary of requirements
         """
         return {
             "Pk_interpolator": {
@@ -73,26 +87,26 @@ class ClusterLikelihood(PoissonLikelihood):
             },
             "Hubble": {"z": self.zarr},
             "angular_diameter_distance": {"z": self.zarr},
-            "comoving_radial_distance": {"z": self.zarr}
+            "comoving_radial_distance": {"z": self.zarr},
             # "CCL": {"methods": {"sz_model": self._get_sz_model}, "kmax": 10},
         }
 
-    def _get_sz_model(self, cosmo):
-        model = SZModel()
-        model.hmf = ccl.halos.MassFuncTinker08(cosmo, mass_def=self.mdef)
-        model.hmb = ccl.halos.HaloBiasTinker10(
-            cosmo, mass_def=self.mdef, mass_def_strict=False
-        )
-        model.hmc = ccl.halos.HMCalculator(cosmo, model.hmf, model.hmb, self.mdef)
-        # model.szk = SZTracer(cosmo)
-        return model
+    # def _get_sz_model(self, cosmo):
+    #     model = SZModel()
+    #     model.hmf = self.ccl.halos.MassFuncTinker08(cosmo, mass_def=self.mdef)
+    #     model.hmb = self.ccl.halos.HaloBiasTinker10(
+    #         cosmo, mass_def=self.mdef, mass_def_strict=False
+    #     )
+    #     model.hmc = self.ccl.halos.HMCalculator(cosmo, model.hmf, model.hmb, self.mdef)
+    #     # model.szk = SZTracer(cosmo)
+    #     return model
 
     def _get_catalog(self):
         self.survey = SurveyData(
             self.data_path, self.data_name
         )  # , MattMock=False,tiles=False)
 
-        self.szutils = szutils(self.survey)
+        self.szutils = SZUtils(self.survey)
 
         df = pd.DataFrame(
             {
@@ -186,13 +200,13 @@ class ClusterLikelihood(PoissonLikelihood):
             c_yerr = tsz_signal_err
             c_z = z
 
-            Pfunc_ind = self.szutils.Pfunc_per(
+            Pfunc_ind = self.szutils.pfunc_per(
                 HMF.M, c_z, c_y * 1e-4, c_yerr * 1e-4, param_vals, Ez_fn, DA_fn
             )
 
             dn_dzdm = 10 ** np.squeeze(dn_dzdm_interp((np.log10(HMF.M), c_z))) * h**4.0
 
-            ans = np.trapz(dn_dzdm * Pfunc_ind, dx=np.diff(HMF.M, axis=0), axis=0)
+            ans = trapezoid(dn_dzdm * Pfunc_ind, dx=np.diff(HMF.M, axis=0), axis=0)
             return ans
 
         return Prob_per_cluster
@@ -230,12 +244,12 @@ class ClusterLikelihood(PoissonLikelihood):
         dn_dzdm = HMF.dn_dM(HMF.M, 500.0) * h**4.0  # getting rid of hs
 
         for Yt, frac in zip(self.survey.Ythresh, self.survey.frac_of_survey):
-            Pfunc = self.szutils.PfuncY(Yt, HMF.M, z_arr, param_vals, Ez_fn, DA_fn)
-            N_z = np.trapz(
+            Pfunc = self.szutils.pfunc_y(Yt, HMF.M, z_arr, param_vals, Ez_fn, DA_fn)
+            N_z = trapezoid(
                 dn_dzdm * Pfunc, dx=np.diff(HMF.M[:, None] / h, axis=0), axis=0
             )
             Ntot += (
-                np.trapz(N_z * dVdz, x=z_arr)
+                trapezoid(N_z * dVdz, x=z_arr)
                 * 4.0
                 * np.pi
                 * self.survey.fskytotal
@@ -245,7 +259,6 @@ class ClusterLikelihood(PoissonLikelihood):
         return Ntot
 
     def _test_n_tot(self, **kwargs):
-
         HMF = self._get_HMF()
         # param_vals = self._get_param_vals(**kwargs)
         # Ez_fn = self._get_Ez_interpolator()
@@ -260,9 +273,9 @@ class ClusterLikelihood(PoissonLikelihood):
         dn_dzdm = HMF.dn_dM(HMF.M, 500.0) * h**4.0  # getting rid of hs
         # Test Mass function against Nemo.
         Pfunc = 1.0
-        N_z = np.trapz(dn_dzdm * Pfunc, dx=np.diff(HMF.M[:, None] / h, axis=0), axis=0)
+        N_z = trapezoid(dn_dzdm * Pfunc, dx=np.diff(HMF.M[:, None] / h, axis=0), axis=0)
         Ntot = (
-            np.trapz(N_z * dVdz, x=z_arr)
+            trapezoid(N_z * dVdz, x=z_arr)
             * 4.0
             * np.pi
             * (600.0 / (4 * np.pi * (180 / np.pi) ** 2))

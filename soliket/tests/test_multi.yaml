@@ -5,42 +5,11 @@ debug: True
 likelihood:
   soliket.gaussian.MultiGaussianLikelihood:
     components:
-      - soliket.mflike.MFLike
+      - mflike.TTTEEE
       - soliket.LensingLikelihood
     options:
-      - input_file: data_sacc_00044.fits
+      - input_file: LAT_simu_sacc_00044.fits
         cov_Bbl_file: data_sacc_w_covar_and_Bbl.fits
-        defaults:
-          # Which spectra?
-          polarizations: ['TT', 'TE', 'ET', 'EE']
-          # Scale cuts (in ell) for each spectrum
-          scales:
-            TT: [2, 6002]
-            TE: [2, 6002]
-            ET: [2, 6002]
-            EE: [2, 6002]
-          symmetrize: False
-        data:
-          experiments:
-            LAT:
-              frequencies: [93, 145, 225]
-
-          spectra:
-            - experiments: ['LAT', 'LAT']
-              frequencies: [93, 93]
-              polarizations: ['TT','TE','EE']
-            - experiments: ['LAT', 'LAT']
-              frequencies: [93, 145]
-            - experiments: ['LAT', 'LAT']
-              frequencies: [93, 225]
-            - experiments: ['LAT', 'LAT']
-              frequencies: [145, 145]
-              polarizations: ['TT','TE','EE']
-            - experiments: ['LAT', 'LAT']
-              frequencies: [145, 225]
-            - experiments: ['LAT', 'LAT']
-              frequencies: [225, 225]
-              polarizations: ['TT','TE','EE']
       - theory_lmax: 5000
         stop_at_error: true
     stop_at_error: True
@@ -182,48 +151,54 @@ params:
     latex: \xi
   T_d:
     prior:
-      min:  8.60
+      min: 8.60
       max: 10.60
     proposal: 0.6
     latex: T_d
   # Systematics
-  bandint_shift_93:
+  bandint_shift_LAT_93:
     value: 0
     latex: \Delta_{\rm band}^{93}
-  bandint_shift_145:
+  bandint_shift_LAT_145:
     value: 0
     latex: \Delta_{\rm band}^{145}
-  bandint_shift_225:
+  bandint_shift_LAT_225:
     value: 0
     latex: \Delta_{\rm band}^{225}
-  calT_93:
+  calT_LAT_93:
     value: 1
     latex: \mathrm{Cal}_{\rm T}^{93}
-  calE_93:
+  calE_LAT_93:
     value: 1
     latex: \mathrm{Cal}_{\rm E}^{93}
-  calT_145:
+  calT_LAT_145:
     value: 1
     latex: \mathrm{Cal}_{\rm T}^{145}
-  calE_145:
+  calE_LAT_145:
     value: 1
     latex: \mathrm{Cal}_{\rm E}^{145}
-  calT_225:
+  calT_LAT_225:
     value: 1
     latex: \mathrm{Cal}_{\rm T}^{225}
-  calE_225:
+  calE_LAT_225:
     value: 1
     latex: \mathrm{Cal}_{\rm E}^{225}
   calG_all:
     value: 1
     latex: \mathrm{Cal}_{\rm G}^{\rm All}
-  alpha_93:
+  cal_LAT_93:
+    value: 1
+  cal_LAT_145:
+    value: 1
+  cal_LAT_225:
+    value: 1
+  alpha_LAT_93:
     value: 0 #deg
     latex: \alpha^{93}
-  alpha_145:
+  alpha_LAT_145:
     value: 0 #deg
     latex: \alpha^{145}
-  alpha_225:
+  alpha_LAT_225:
     value: 0 #deg
     latex: \alpha^{225}
 
@@ -232,11 +207,7 @@ theory:
     stop_at_error: False
     extra_args:
       lens_potential_accuracy: 1
-  soliket.TheoryForge_MFLike: 
-    stop_at_error: True
-  soliket.Foreground:
-    stop_at_error: True
-  soliket.BandPass:
+  mflike.BandpowerForeground:
     stop_at_error: True
 
 sampler:

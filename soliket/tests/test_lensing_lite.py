@@ -1,11 +1,12 @@
-import pytest
-import numpy as np
+import importlib
 
-from cobaya.yaml import yaml_load
+import numpy as np
+import pytest
 from cobaya.model import get_model
+from cobaya.yaml import yaml_load
 
 try:
-    import classy  # noqa F401
+    _ = importlib.import_module("classy")
 except ImportError:
     boltzmann_codes = ["camb"]
 else:

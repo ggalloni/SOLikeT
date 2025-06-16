@@ -1,22 +1,22 @@
 """
 .. module:: survey
 
-This module contains useful functions to internally required by the cluster likelihood to 
-navigate cluster catalogues. The ``SurveyData`` class contains information about the 
+This module contains useful functions to internally required by the cluster likelihood to
+navigate cluster catalogues. The ``SurveyData`` class contains information about the
 specific survey.
 
 """
 
 import os
-import numpy as np
 
-from scipy import interpolate
 import astropy.io.fits as pyfits
+import astropy.table as atpy
+import numpy as np
+from astropy.io import fits
 
 # from astLib import astWCS
 from astropy.wcs import WCS
-from astropy.io import fits
-import astropy.table as atpy
+from scipy import interpolate
 
 
 def read_clust_cat(fitsfile, qmin):
@@ -76,7 +76,7 @@ def loadAreaMask(extName, DIR):
      produced by nemo).
     Returns map array, wcs
     """
-    areaImg = pyfits.open(os.path.join(DIR, "areaMask%s.fits.gz" % (extName)))
+    areaImg = pyfits.open(os.path.join(DIR, "areaMask%s.fits.gz" % extName))
     areaMap = areaImg[0].data
     wcs = WCS(areaImg[0].header)  # , mode="pyfits")
     areaImg.close()
@@ -89,7 +89,7 @@ def loadRMSmap(extName, DIR):
     Returns map array, wcs
     """
     areaImg = pyfits.open(
-        os.path.join(DIR, "RMSMap_Arnaud_M2e14_z0p4%s.fits.gz" % (extName))
+        os.path.join(DIR, "RMSMap_Arnaud_M2e14_z0p4%s.fits.gz" % extName)
     )
     areaMap = areaImg[0].data
     wcs = WCS(areaImg[0].header)  # , mode="pyfits")
@@ -132,7 +132,7 @@ def loadQ(source, tileNames=None):
             )
         for tileName in tileNames:
             tab = atpy.Table().read(
-                combinedQTabFileName.replace(".fits", "#%s.fits" % (tileName))
+                combinedQTabFileName.replace(".fits", "#%s.fits" % tileName)
             )
             tckDict[tileName] = interpolate.splrep(tab["theta500Arcmin"], tab["Q"])
     return tckDict
@@ -174,12 +174,8 @@ class SurveyData:
 
         if tiles:
             self.filetile = self.nemodir + "/tileAreas.txt"
-            self.tilenames = np.loadtxt(
-                self.filetile, dtype=np.str, usecols=0, unpack=True
-            )
-            self.tilearea = np.loadtxt(
-                self.filetile, dtype=np.float, usecols=1, unpack=True
-            )
+            self.tilenames = np.loadtxt(self.filetile, dtype=str, usecols=0, unpack=True)
+            self.tilearea = np.loadtxt(self.filetile, dtype=float, usecols=1, unpack=True)
 
             self.fsky = []
             self.mask = []

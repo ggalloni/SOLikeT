@@ -1,18 +1,21 @@
-from .lensing import LensingLiteLikelihood, LensingLikelihood  # noqa: F401
-from .gaussian import GaussianLikelihood, MultiGaussianLikelihood  # noqa: F401
-# from .studentst import StudentstLikelihood  # noqa: F401
-from .ps import PSLikelihood, BinnedPSLikelihood  # noqa: F401
-from .mflike import MFLike  # noqa: F401
-from .mflike import TheoryForge_MFLike
-from .cross_correlation import CrossCorrelationLikelihood, GalaxyKappaLikelihood, ShearKappaLikelihood  # noqa: F401, E501
-from .xcorr import XcorrLikelihood  # noqa: F401
-from .foreground import Foreground
-from .bandpass import BandPass
-from .cosmopower import CosmoPower, CosmoPowerDerived
-from .ccl import CCL  # noqa: F401
+from importlib.metadata import PackageNotFoundError, version
 
 try:
-    from .clusters import ClusterLikelihood  # noqa: F401
-except ImportError:
-    print('Skipping cluster likelihood (is pyCCL installed?)')
+    __version__ = version("soliket")
+except PackageNotFoundError:
+    # package is not installed
     pass
+
+from .bias import Bias, Linear_bias
+from .ccl import CCL
+from .clusters import ClusterLikelihood
+from .cosmopower import CosmoPower, CosmoPowerDerived
+from .cross_correlation import (
+    CrossCorrelationLikelihood,
+    GalaxyKappaLikelihood,
+    ShearKappaLikelihood,
+)
+from .gaussian import GaussianLikelihood, MultiGaussianLikelihood
+from .lensing import LensingLikelihood, LensingLiteLikelihood
+from .ps import BinnedPSLikelihood, PSLikelihood
+from .xcorr import XcorrLikelihood

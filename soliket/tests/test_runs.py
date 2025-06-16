@@ -1,71 +1,89 @@
 import pkgutil
+
 import pytest
-import tempfile
-from cobaya.yaml import yaml_load
+from cobaya.install import install
 from cobaya.run import run
+from cobaya.tools import resolve_packages_path
+from cobaya.yaml import yaml_load
 
-import os
+packages_path = resolve_packages_path()
 
-packages_path = os.environ.get("COBAYA_PACKAGES_PATH") or os.path.join(
-    tempfile.gettempdir(), "lensing_packages"
+
+@pytest.mark.parametrize(
+    "lhood",
+    [
+        "lensing",
+        "multi",
+    ],
 )
+def test_installation(lhood):
+    if lhood == "lensing":
+        from soliket import LensingLikelihood
 
-import os
+        is_installed = LensingLikelihood.is_installed(
+            path=packages_path,
+        )
+        assert is_installed is True, (
+            "LensingLikelihood is not installed! Please install it using "
+            "'cobaya-install soliket.LensingLikelihood'"
+        )
 
-packages_path = os.environ.get("COBAYA_PACKAGES_PATH") or os.path.join(
-    tempfile.gettempdir(), "lensing_packages"
+    elif lhood == "multi":
+        _ = pytest.importorskip("mflike", reason="Couldn't import 'mflike' module")
+        import mflike
+
+        is_installed = mflike.TTTEEE.is_installed(
+            path=packages_path,
+        )
+        assert is_installed is True, (
+            "mflike.TTTEEE is not installed! Please install it using "
+            "'cobaya-install mflike.TTTEEE'"
+        )
+
+
+@pytest.mark.parametrize(
+    "lhood",
+    [
+        "lensing",
+        "lensing_lite",
+        "multi",
+        # "galaxykappa",
+        # "shearkappa"
+        # "xcorr"
+    ],
 )
-
-
-@pytest.mark.parametrize("lhood",
-                         ["mflike",
-                          "lensing",
-                          "lensing_lite",
-                          "multi",
-                          # "galaxykappa",
-                          # "shearkappa"
-                          # "xcorr"
-                          ])
 def test_evaluate(lhood):
-
-    if lhood == "multi":
-        pytest.xfail(reason="multi lhood install failure")
-
-    if lhood == "mflike":
-        pytest.skip(reason="don't want to install 300Mb of data!")
-
     info = yaml_load(pkgutil.get_data("soliket", f"tests/test_{lhood}.yaml"))
     info["force"] = True
-    info['sampler'] = {'evaluate': {}}
+    info["sampler"] = {"evaluate": {}}
 
-    from cobaya.install import install
-    install(info, path=packages_path, skip_global=True)
+    if lhood == "multi":
+        pytest.importorskip("mflike", reason="Couldn't import 'mflike' module")
+
+    install(info, path=packages_path, skip_global=True, no_set_global=True)
 
     updated_info, sampler = run(info)
 
 
-@pytest.mark.parametrize("lhood",
-                         ["mflike",
-                          "lensing",
-                          "lensing_lite",
-                          "multi",
-                          # "galaxykappa",
-                          # "shearkappa"
-                          # "xcorr"
-                          ])
+@pytest.mark.parametrize(
+    "lhood",
+    [
+        "lensing",
+        "lensing_lite",
+        "multi",
+        # "galaxykappa",
+        # "shearkappa"
+        # "xcorr"
+    ],
+)
 def test_mcmc(lhood):
-
-    if lhood == "multi":
-        pytest.xfail(reason="multi lhood install failure")
-
-    if lhood == "mflike":
-        pytest.skip(reason="don't want to install 300Mb of data!")
-
     info = yaml_load(pkgutil.get_data("soliket", f"tests/test_{lhood}.yaml"))
     info["force"] = True
-    info['sampler'] = {'mcmc': {'max_samples': 10, 'max_tries': 1000}}
+    info["sampler"] = {"mcmc": {"max_samples": 10, "max_tries": 1000}}
 
-    from cobaya.install import install
-    install(info, path=packages_path, skip_global=True)
+    if lhood == "multi":
+        pytest.importorskip("mflike", reason="Couldn't import 'mflike' module")
+
+    install(info, path=packages_path, skip_global=True, no_set_global=True)
 
     updated_info, sampler = run(info)

@@ -1,11 +1,12 @@
+import importlib
+
 import numpy as np
+from cobaya.theory import Theory
 
 from soliket.cash import CashCData
-from cobaya.theory import Theory
 
 
 class cash_theory_calculator(Theory):
-
     def calculate(self, state, want_derived=False, **params_values_dict):
         state["cash_theory"] = np.arange(params_values_dict["param_test_cash"])
 
@@ -23,15 +24,17 @@ def toy_data():
 
 
 def test_cash_import():
-    from soliket.cash import CashCLikelihood
+    _ = importlib.import_module("soliket.cash").CashCLikelihood
 
 
 def test_cash_read_data(request):
     import os
+
     from soliket.cash import CashCLikelihood
 
-    cash_data_path = os.path.join(request.config.rootdir,
-            "soliket/tests/data/cash_data.txt")
+    cash_data_path = os.path.join(
+        request.config.rootdir, "soliket/tests/data/cash_data.txt"
+    )
 
     cash_lkl = CashCLikelihood({"datapath": cash_data_path})
     cash_data = cash_lkl._get_data()
@@ -40,11 +43,13 @@ def test_cash_read_data(request):
 
 def test_cash_logp(request):
     import os
+
     from soliket.cash import CashCLikelihood
 
     params = {"cash_test_logp": 20}
-    cash_data_path = os.path.join(request.config.rootdir,
-            "soliket/tests/data/cash_data.txt")
+    cash_data_path = os.path.join(
+        request.config.rootdir, "soliket/tests/data/cash_data.txt"
+    )
 
     cash_lkl = CashCLikelihood({"datapath": cash_data_path})
     cash_logp = cash_lkl.logp(**params)
@@ -52,7 +57,6 @@ def test_cash_logp(request):
 
 
 def test_cash():
-
     data1d, theory1d, data2d, theory2d = toy_data()
 
     cashdata1d = CashCData("toy 1d", data1d)
