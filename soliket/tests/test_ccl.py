@@ -38,7 +38,7 @@ def test_ccl_import(check_skip_pyccl):
     _ = importlib.import_module("pyccl")
 
 
-def test_wrong_types():
+def test_wrong_types(check_skip_pyccl):
     from soliket.ccl import CCL
 
     base_case = {"kmax": 0.1, "nonlinear": True, "z": 0.5, "extra_args": {}}

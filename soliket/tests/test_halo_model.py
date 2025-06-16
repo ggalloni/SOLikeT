@@ -14,7 +14,7 @@ def test_pyhalomodel_import(check_skip_pyhalomodel):
     _ = importlib.import_module("soliket.halo_model").HaloModel_pyhm
 
 
-def test_wrong_types():
+def test_wrong_types(check_skip_pyhalomodel):
     from soliket.halo_model import HaloModel, HaloModel_pyhm
 
     base_case_halo_model = {"kmax": 10, "z": 0.5, "extra_args": {}}
