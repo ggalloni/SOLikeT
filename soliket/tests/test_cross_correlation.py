@@ -1,4 +1,3 @@
-import importlib
 import copy
 import importlib
 import os
@@ -6,7 +5,6 @@ import os
 import numpy as np
 import pytest
 from cobaya.model import get_model
-import pytest
 
 from soliket.ccl import CCL
 

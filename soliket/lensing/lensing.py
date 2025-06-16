@@ -190,7 +190,7 @@ class LensingLikelihood(BinnedPSLikelihood, InstallableLikelihood):
 
     def _get_data(self) -> tuple[np.ndarray, np.ndarray]:
         bin_centers, bandpowers, cov = self.sacc.get_ell_cl(
-            None, 'ck', 'ck', return_cov=True
+            None, "ck", "ck", return_cov=True
         )
         self.x = bin_centers
         self.y = bandpowers

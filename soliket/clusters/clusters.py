@@ -31,7 +31,6 @@ from soliket.constants import C_KM_S
 from soliket.poisson import PoissonLikelihood
 
 from .survey import SurveyData
-
 from .sz_utils import SZUtils, trapezoid
 
 

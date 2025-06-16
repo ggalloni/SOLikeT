@@ -2,17 +2,13 @@
 Check that CCL works correctly.
 """
 
-import importlib
-
-import copy
-
 import copy
 import importlib
 
 import numpy as np
+import pytest
 from cobaya.likelihood import Likelihood
 from cobaya.model import get_model
-import pytest
 
 
 class CheckLike(Likelihood):

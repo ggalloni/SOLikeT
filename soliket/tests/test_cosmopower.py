@@ -7,8 +7,8 @@ import importlib
 import os
 
 import numpy as np
-from cobaya.model import get_model
 import pytest
+from cobaya.model import get_model
 
 fiducial_params = {
     "ombh2": 0.0224,
@@ -69,6 +69,7 @@ info_dict = {
 
 def test_cosmopower_import(check_skip_cosmopower):
     _ = importlib.import_module("soliket.cosmopower").CosmoPower
+
 
 def test_wrong_types(check_skip_cosmopower):
     from soliket.cosmopower import CosmoPower

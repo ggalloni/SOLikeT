@@ -37,6 +37,9 @@ class GaussianLikelihood(Likelihood):
     def _get_theory(self, **kwargs) -> np.ndarray:
         raise NotImplementedError
 
+    def _get_gauss_data(self):
+        return self.data
+
     def logp(self, **params_values) -> float:
         theory = self._get_theory(**params_values)
         return self.data.loglike(theory)
