@@ -5,7 +5,6 @@ Parameters and functions used internally by the cluster likelihood for the Tinke
 
 """
 
-from typing import Optional, Tuple, Union
 import numpy as np
 from scipy.integrate import simpson
 from scipy.interpolate import InterpolatedUnivariateSpline as iuSpline
@@ -31,8 +30,8 @@ tinker_splines: list[iuSpline] | None = None
 
 
 def tinker_params_spline(
-    delta: float, z: Optional[Union[float, np.ndarray]] = None
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    delta: float, z: float | np.ndarray | None = None
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     global tinker_splines
     if tinker_splines is None:
         tinker_splines = []
@@ -57,8 +56,8 @@ def tinker_params_spline(
 
 
 def tinker_params_analytic(
-    delta: Union[float, np.ndarray], z: Optional[Union[float, np.ndarray]] = None
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    delta: float | np.ndarray, z: float | np.ndarray | None = None
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     alpha = None
     if np.asarray(delta).ndim == 0:  # scalar delta.
         A0, a0, b0, c0 = (p[0] for p in tinker_params(np.array([delta]), z=None))
@@ -95,24 +94,25 @@ tinker_params = tinker_params_spline
 
 
 def tinker_f(
-    sigma: Union[float, np.ndarray], params: Tuple[float, float, float, float]
-) -> Union[float, np.ndarray]:
+    sigma: float | np.ndarray, params: tuple[float, float, float, float]
+) -> float | np.ndarray:
     A, a, b, c = params
     return A * ((sigma / b) ** -a + 1) * np.exp(-c / sigma**2)
 
 
 # Sigma-evaluation, and top-hat functions.
 
+
 def radius_from_mass(
-    M: Union[float, np.ndarray], rho: Union[float, np.ndarray]
-) -> Union[float, np.ndarray]:
+    M: float | np.ndarray, rho: float | np.ndarray
+) -> float | np.ndarray:
     """
     Convert mass M to radius R assuming density rho.
     """
     return (3.0 * M / (4.0 * np.pi * rho)) ** (1 / 3.0)
 
 
-def top_hatf(kR: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+def top_hatf(kR: float | np.ndarray) -> float | np.ndarray:
     """
     Returns the Fourier transform of the spherical top-hat function
     evaluated at a given k*R.
@@ -154,10 +154,10 @@ def dn_dlogM(
     M: np.ndarray,
     z: np.ndarray,
     rho: np.ndarray,
-    delta: Union[float, np.ndarray],
+    delta: float | np.ndarray,
     k: np.ndarray,
     P: np.ndarray,
-    comoving: bool = False
+    comoving: bool = False,
 ) -> np.ndarray:
     """
     M      is  (nM)  or  (nM, nz)

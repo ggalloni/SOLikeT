@@ -2,8 +2,8 @@ import copy
 import importlib
 
 import numpy as np
-from cobaya.model import get_model
 import pytest
+from cobaya.model import get_model
 
 
 def test_halomodel_import(check_skip_pyhalomodel):
@@ -35,14 +35,14 @@ def test_wrong_types():
         "hmf_Dv": 1.0,
         "Mmin": 1.0,
         "Mmax": 1.0,
-        "nM": 10
+        "nM": 10,
     }
     wrong_type_cases_halo_model_pyhm = {
         "hmf_name": 123,
         "hmf_Dv": "not_a_float",
         "Mmin": "not_a_float",
         "Mmax": "not_a_float",
-        "nM": "not_an_int"
+        "nM": "not_an_int",
     }
 
     for key, wrong_value in wrong_type_cases_halo_model_pyhm.items():
@@ -50,6 +50,7 @@ def test_wrong_types():
         case[key] = wrong_value
         with pytest.raises(TypeError):
             _ = HaloModel_pyhm(**case)
+
 
 def test_pyhalomodel_model(
     evaluate_one_info, test_cosmology_params, check_skip_pyhalomodel

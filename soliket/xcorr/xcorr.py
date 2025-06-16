@@ -8,14 +8,13 @@ Based on the original xcorr code [1]_ used in Krolewski et al (2021) [2]_.
 
 """
 
-from typing import Optional, Tuple, Union
-from cobaya.theory import Provider
 import numpy as np
 import sacc
+from cobaya.theory import Provider
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 
-from soliket.utils import binner
 from soliket.gaussian import GaussianData, GaussianLikelihood
+from soliket.utils import binner
 
 from .limber import do_limber
 
@@ -61,19 +60,20 @@ class XcorrLikelihood(GaussianLikelihood):
         Magnification bias slope for the galaxy sample.
 
     """
-    auto_file: Optional[str]
-    cross_file: Optional[str]
-    dndz_file: Optional[str]
-    datapath: Optional[str]
-    k_tracer_name: Optional[str]
-    gc_tracer_name: Optional[str]
+
+    auto_file: str | None
+    cross_file: str | None
+    dndz_file: str | None
+    datapath: str | None
+    k_tracer_name: str | None
+    gc_tracer_name: str | None
     high_ell: int
     nz: int
     Nchi: int
     Nchi_mag: int
-    Pk_interp_kmax: Union[int, float]
-    b1: Union[int, float]
-    s1: Union[int, float]
+    Pk_interp_kmax: int | float
+    b1: int | float
+    s1: int | float
 
     provider: Provider
 
@@ -97,9 +97,8 @@ class XcorrLikelihood(GaussianLikelihood):
             else:
                 self.cov = self._get_cov()
         else:
-
-            self.k_tracer_name: Optional[str]
-            self.gc_tracer_name: Optional[str]
+            self.k_tracer_name: str | None
+            self.gc_tracer_name: str | None
             # tracer_combinations: Optional[str] # TODO: implement with keep_selection
 
             self.sacc_data = self._get_sacc_data()
@@ -194,11 +193,7 @@ class XcorrLikelihood(GaussianLikelihood):
 
         return data
 
-
-    def _get_data(
-        self, **params_values
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-
+    def _get_data(self, **params_values) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         data_auto = np.loadtxt(self.auto_file)
         data_cross = np.loadtxt(self.cross_file)
 
@@ -218,7 +213,6 @@ class XcorrLikelihood(GaussianLikelihood):
         return x, y, dy
 
     def _setup_chi(self) -> dict:
-
         chival = self.provider.get_comoving_radial_distance(self.zarray)
         zatchi = Spline(chival, self.zarray)
         chiatz = Spline(self.zarray, chival)
@@ -248,7 +242,6 @@ class XcorrLikelihood(GaussianLikelihood):
         return chi_result
 
     def _get_theory(self, **params_values) -> np.ndarray:
-
         setup_chi_out = self._setup_chi()
 
         Pk_interpolator = self.provider.get_Pk_interpolator(
@@ -280,6 +273,6 @@ class XcorrLikelihood(GaussianLikelihood):
 
         ell_gg, clobs_gg = binner(self.ell_range, cl_gg, bin_edges)
         ell_kappag, clobs_kappag = binner(self.ell_range, cl_kappag, bin_edges)
-        #ell_kappakappa, clobs_kappakappa = binner(self.ell_range, cl_kappakappa, bin_edges) # noqa E501
+        # ell_kappakappa, clobs_kappakappa = binner(self.ell_range, cl_kappakappa, bin_edges) # noqa E501
 
         return np.concatenate([clobs_gg, clobs_kappag])

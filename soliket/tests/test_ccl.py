@@ -1,8 +1,8 @@
 """
 Check that CCL works correctly.
 """
-import copy
 
+import copy
 import importlib
 
 import numpy as np
@@ -46,7 +46,7 @@ def test_wrong_types():
         "kmax": "not_a_float",
         "nonlinear": "not_a_bool",
         "z": "not_a_float_or_list",
-        "extra_args": "not_a_dict"
+        "extra_args": "not_a_dict",
     }
 
     for key, wrong_value in wrong_type_cases.items():

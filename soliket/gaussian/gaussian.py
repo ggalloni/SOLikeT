@@ -1,5 +1,5 @@
-from typing import Dict, List, Optional, Sequence, Tuple
 from collections.abc import Sequence
+from typing import Optional
 
 import numpy as np
 from cobaya.input import merge_info
@@ -14,9 +14,9 @@ from soliket.utils import get_likelihood
 
 class GaussianLikelihood(Likelihood):
     name: str = "Gaussian"
-    datapath: Optional[str] = None
-    covpath: Optional[str] = None
-    ncovsims: Optional[int] = None
+    datapath: str | None = None
+    covpath: str | None = None
+    ncovsims: int | None = None
     provider: Provider
 
     _enforce_types: bool = True
@@ -26,7 +26,7 @@ class GaussianLikelihood(Likelihood):
         cov = self._get_cov()
         self.data = GaussianData(self.name, x, y, cov, self.ncovsims)
 
-    def _get_data(self) -> Tuple[np.ndarray, np.ndarray]:
+    def _get_data(self) -> tuple[np.ndarray, np.ndarray]:
         x, y = np.loadtxt(self.datapath, unpack=True)
         return x, y
 
@@ -50,7 +50,7 @@ class CrossCov(dict):
         np.savez(path, **{str(k): v for k, v in self.items()})
 
     @classmethod
-    def load(cls, path: Optional[str]) -> Optional["CrossCov"]:
+    def load(cls, path: str | None) -> Optional["CrossCov"]:
         if path is None:
             return None
         return cls({eval(k): v for k, v in np.load(path).items()})
@@ -63,7 +63,7 @@ class MultiGaussianLikelihood(GaussianLikelihood):
 
     def __init__(self, info=empty_dict, **kwargs):
         if "components" in info:
-            self.likelihoods : List[Likelihood] = [
+            self.likelihoods: list[Likelihood] = [
                 get_likelihood(*kv) for kv in zip(info["components"], info["options"])
             ]
 
@@ -75,7 +75,7 @@ class MultiGaussianLikelihood(GaussianLikelihood):
         super().__init__(info=default_info, **kwargs)
 
     def initialize(self):
-        self.cross_cov: Optional[CrossCov] = CrossCov.load(self.cross_cov_path)
+        self.cross_cov: CrossCov | None = CrossCov.load(self.cross_cov_path)
 
         data_list = [like._get_gauss_data() for like in self.likelihoods]
         self.data = MultiGaussianData(data_list, self.cross_cov)
@@ -87,8 +87,8 @@ class MultiGaussianLikelihood(GaussianLikelihood):
             like.initialize_with_provider(provider)
         # super().initialize_with_provider(provider)
 
-    def get_helper_theories(self) -> Dict[str, Theory]:  # pragma: no cover
-        helpers: Dict[str, Theory] = {}
+    def get_helper_theories(self) -> dict[str, Theory]:  # pragma: no cover
+        helpers: dict[str, Theory] = {}
         for like in self.likelihoods:
             helpers.update(like.get_helper_theories())
 

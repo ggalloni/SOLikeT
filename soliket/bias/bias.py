@@ -26,7 +26,7 @@ If you want to add your own bias model, you can do so by inheriting from the
 function (have a look at the linear bias model for ideas).
 """
 
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 
 import numpy as np
 from cobaya.theory import Theory
@@ -35,10 +35,10 @@ from cobaya.theory import Theory
 class Bias(Theory):
     """Parent class for bias models."""
 
-    kmax: Union[int, float]
+    kmax: int | float
     nonlinear: bool
-    z: Union[float, List[float], np.ndarray]
-    extra_args: Optional[dict]
+    z: float | list[float] | np.ndarray
+    extra_args: dict | None
     params: dict
 
     _enforce_types: bool = True
@@ -48,12 +48,12 @@ class Bias(Theory):
     _default_z_sampling[0] = 0
 
     def initialize(self):
-        self._var_pairs: Set[Tuple[str, str]] = set()
+        self._var_pairs: set[tuple[str, str]] = set()
 
-    def get_requirements(self) -> Dict[str, Any]:
+    def get_requirements(self) -> dict[str, Any]:
         return {}
 
-    def must_provide(self, **requirements) -> Dict[str, Any]:
+    def must_provide(self, **requirements) -> dict[str, Any]:
         options = requirements.get("linear_bias") or {}
 
         self.kmax = max(self.kmax, options.get("kmax", self.kmax))

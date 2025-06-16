@@ -5,9 +5,10 @@ Used internally by the xcorr likelihood to compute angular power spectra of diff
  probes under the Limber approximation.
 """
 
-from typing import Callable, Dict, Optional, Tuple
-from cobaya.theory import Provider
+from collections.abc import Callable
+
 import numpy as np
+from cobaya.theory import Provider
 
 try:
     from numpy import trapezoid
@@ -25,7 +26,7 @@ def mag_bias_kernel(
     zatchi: Callable[[np.ndarray], np.ndarray],
     chi_arr: np.ndarray,
     chiprime_arr: np.ndarray,
-    zprime_arr: np.ndarray
+    zprime_arr: np.ndarray,
 ) -> np.ndarray:
     """Calculates magnification bias kernel."""
 
@@ -72,13 +73,13 @@ def do_limber(
     b2_HF: float,
     alpha_auto: float,
     alpha_cross: float,
-    chi_grids: Dict[str, np.ndarray],
+    chi_grids: dict[str, np.ndarray],
     Nchi: int = 50,
-    dndz1_mag: Optional[np.ndarray] = None,
-    dndz2_mag: Optional[np.ndarray] = None,
-    normed: bool = False
-) -> Tuple[np.ndarray, np.ndarray]:
-    zatchi = chi_grids['zatchi']
+    dndz1_mag: np.ndarray | None = None,
+    dndz2_mag: np.ndarray | None = None,
+    normed: bool = False,
+) -> tuple[np.ndarray, np.ndarray]:
+    zatchi = chi_grids["zatchi"]
     # chiatz = chi_grids['chiatz']
     chi_arr = chi_grids["chival"]
     # z_arr = chi_grids['zval']

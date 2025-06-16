@@ -1,6 +1,7 @@
 # pytest -k xcorr -v --pdb .
 
 import copy
+
 import numpy as np
 import pytest
 from cobaya.model import get_model
@@ -104,7 +105,7 @@ def test_wrong_types():
         "k_tracer_name": 123,
         "gc_tracer_name": 123,
         "high_ell": "not_an_int",
-        "nz": "not_an_int"
+        "nz": "not_an_int",
     }
 
     for key, wrong_value in wrong_type_cases.items():

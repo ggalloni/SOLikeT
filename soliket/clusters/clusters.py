@@ -19,22 +19,18 @@ p
 """
 
 import os
-from typing import Dict
 
 import numpy as np
 import pandas as pd
 from cobaya import LoggedError
+from cobaya.theory import Provider
 from scipy.interpolate import interp1d
 
-from soliket.constants import C_KM_S
 from soliket.clusters import massfunc as mf
+from soliket.constants import C_KM_S
 from soliket.poisson import PoissonLikelihood
 
 from .survey import SurveyData
-
-from cobaya import LoggedError
-from cobaya.theory import Provider
-
 from .sz_utils import SZUtils, trapezoid
 
 
@@ -162,7 +158,7 @@ class ClusterLikelihood(PoissonLikelihood):
 
         return hmf
 
-    def _get_param_vals(self, **kwargs) -> Dict[str, float]:
+    def _get_param_vals(self, **kwargs) -> dict[str, float]:
         # Read in scaling relation parameters
         # scat = kwargs['scat']
         # massbias = kwargs['massbias']

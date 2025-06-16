@@ -12,7 +12,7 @@ data download.
 """
 
 import os
-from typing import ClassVar, Tuple
+from typing import ClassVar
 
 import numpy as np
 import sacc
@@ -48,8 +48,7 @@ class LensingLikelihood(BinnedPSLikelihood, InstallableLikelihood):
     """
 
     _url: str = (
-        "https://portal.nersc.gov/project/act/jia_qu/lensing_like/"
-        "likelihood.tar.gz"
+        "https://portal.nersc.gov/project/act/jia_qu/lensing_like/likelihood.tar.gz"
     )
     install_options: ClassVar = {"download_url": _url}
     data_folder: str = "LensingLikelihood/"
@@ -185,11 +184,11 @@ class LensingLikelihood(BinnedPSLikelihood, InstallableLikelihood):
                 "zstar": None,
             }
 
-    def _get_CCL_results(self) -> Tuple[CCL, dict]:
+    def _get_CCL_results(self) -> tuple[CCL, dict]:
         cosmo_dict = self.provider.get_CCL()
         return cosmo_dict["ccl"], cosmo_dict["cosmo"]
 
-    def _get_data(self) -> Tuple[np.ndarray, np.ndarray]:
+    def _get_data(self) -> tuple[np.ndarray, np.ndarray]:
         bin_centers, bandpowers, cov = self.sacc.get_ell_cl(
             None, "ck", "ck", return_cov=True
         )

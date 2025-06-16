@@ -5,7 +5,8 @@ data. Makes use of the cobaya CCL module for handling tracers and Limber integra
 :Authors: Pablo Lemos, Ian Harrison.
 """
 
-from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
+from typing import Any, ClassVar
+
 import numpy as np
 
 try:
@@ -26,18 +27,18 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
     """
 
     datapath: str
-    use_spectra: Union[str, List[Tuple[str, str]]]
-    ncovsims: Optional[int]
+    use_spectra: str | list[tuple[str, str]]
+    ncovsims: int | None
     provider: Provider
 
     def initialize(self):
         self._get_sacc_data()
         self._check_tracers()
 
-    def get_requirements(self) -> Dict[str, Any]:
+    def get_requirements(self) -> dict[str, Any]:
         return {"CCL": {"kmax": 10, "nonlinear": True}, "zstar": None}
 
-    def _get_CCL_results(self) -> Tuple[CCL, dict]:
+    def _get_CCL_results(self) -> tuple[CCL, dict]:
         cosmo_dict = self.provider.get_CCL()
         return cosmo_dict["ccl"], cosmo_dict["cosmo"]
 
@@ -60,22 +61,18 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
                 if self.sacc_data.tracers[tracer].quantity not in self._allowable_tracers:
                     raise LoggedError(
                         self.log,
-                        f'You have tried to use a \
+                        f"You have tried to use a \
                         {self.sacc_data.tracers[tracer].quantity} tracer in \
                         {self.__class__.__name__}, which only allows \
                         {self._allowable_tracers}. Please check your \
-                        tracer selection in the ini file.'
-                        )
+                        tracer selection in the ini file.",
+                    )
 
     def _get_nz(
-        self,
-        z: np.ndarray,
-        tracer: Any,
-        tracer_name: str,
-        **params_values
+        self, z: np.ndarray, tracer: Any, tracer_name: str, **params_values
     ) -> np.ndarray:
-        if self.z_nuisance_mode == 'deltaz':
-            bias = params_values[f'{tracer_name}_deltaz']
+        if self.z_nuisance_mode == "deltaz":
+            bias = params_values[f"{tracer_name}_deltaz"]
             nz_biased = tracer.get_dndz(z - bias)
 
         # nz_biased /= np.trapezoid(nz_biased, z)
@@ -108,9 +105,7 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
 
         return np.concatenate(ell_eff)
 
-    def _get_data(
-        self, **params_values
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def _get_data(self, **params_values) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         data_auto = np.loadtxt(self.auto_file)
         data_cross = np.loadtxt(self.cross_file)
 
@@ -129,7 +124,7 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
 
         return x, y, dy
 
-    def get_binning(self, tracer_comb: tuple) -> Tuple[np.ndarray, np.ndarray]:
+    def get_binning(self, tracer_comb: tuple) -> tuple[np.ndarray, np.ndarray]:
         bpw_idx = self.sacc_data.indices(tracers=tracer_comb)
         bpw = self.sacc_data.get_bandpower_windows(bpw_idx)
         ells_theory = bpw.values
@@ -147,7 +142,8 @@ class GalaxyKappaLikelihood(CrossCorrelationLikelihood):
     r"""
     Likelihood for cross-correlations of galaxy and CMB lensing data.
     """
-    _allowable_tracers: ClassVar[List[str]] = ['cmb_convergence', 'galaxy_density']
+
+    _allowable_tracers: ClassVar[list[str]] = ["cmb_convergence", "galaxy_density"]
     params: dict
 
     def _get_theory(self, **params_values) -> np.ndarray:
@@ -172,7 +168,7 @@ class GalaxyKappaLikelihood(CrossCorrelationLikelihood):
             bias=(z_gal_tracer, params_values["b1"] * np.ones(len(z_gal_tracer))),
             mag_bias=(z_gal_tracer, params_values["s1"] * np.ones(len(z_gal_tracer))),
         )
-        tracer_k = ccl.CMBLensingTracer(cosmo, z_source=self.provider.get_param('zstar'))
+        tracer_k = ccl.CMBLensingTracer(cosmo, z_source=self.provider.get_param("zstar"))
 
         ells_theory_gk, w_bins_gk = self.get_binning((gal_tracer, cmbk_tracer))
 
@@ -187,16 +183,17 @@ class ShearKappaLikelihood(CrossCorrelationLikelihood):
     r"""
     Likelihood for cross-correlations of galaxy weak lensing shear and CMB lensing data.
     """
-    _allowable_tracers: ClassVar[List[str]] = ["cmb_convergence", "galaxy_shear"]
 
-    z_nuisance_mode: Optional[Union[str, bool]]
-    m_nuisance_mode: Optional[Union[str, bool]]
-    ia_mode: Optional[str]
+    _allowable_tracers: ClassVar[list[str]] = ["cmb_convergence", "galaxy_shear"]
+
+    z_nuisance_mode: str | bool | None
+    m_nuisance_mode: str | bool | None
+    ia_mode: str | None
     params: dict
 
     def _get_theory(self, **params_values) -> np.ndarray:
         ccl, cosmo = self._get_CCL_results()
-        cl_binned_list: List[np.ndarray] = []
+        cl_binned_list: list[np.ndarray] = []
 
         for tracer_comb in self.sacc_data.get_tracer_combinations():
             if self.sacc_data.tracers[tracer_comb[0]].quantity == "cmb_convergence":
@@ -289,7 +286,7 @@ class ShearKappaLikelihood(CrossCorrelationLikelihood):
                     if self.sacc_data.tracers[tracer_comb[1]].quantity == "galaxy_shear"
                     else tracer_comb[0]
                 )
-                m_bias = params_values[f'{sheartracer_name}_m']
+                m_bias = params_values[f"{sheartracer_name}_m"]
                 cl_unbinned = (1 + m_bias) * cl_unbinned
 
             cl_binned = np.dot(w_bins, cl_unbinned)
@@ -298,12 +295,10 @@ class ShearKappaLikelihood(CrossCorrelationLikelihood):
         cl_binned_total = np.concatenate(cl_binned_list)
         return cl_binned_total
 
-    def _get_tracer(
-        self, ccl: CCL, cosmo: dict, tracer_name: str, params_values: dict
-    ):
+    def _get_tracer(self, ccl: CCL, cosmo: dict, tracer_name: str, params_values: dict):
         tracer_data = self.sacc_data.tracers[tracer_name]
         if tracer_data.quantity == "cmb_convergence":
-            return ccl.CMBLensingTracer(cosmo, z_source=self.provider.get_param('zstar'))
+            return ccl.CMBLensingTracer(cosmo, z_source=self.provider.get_param("zstar"))
         elif tracer_data.quantity == "galaxy_shear":
             z_tracer = self.sacc_data.tracers[tracer_name].z
             nz_tracer = self.sacc_data.tracers[tracer_name].nz
@@ -320,25 +315,24 @@ class ShearKappaLikelihood(CrossCorrelationLikelihood):
             return tracer
         return None
 
-
     def _get_ia_bias(
         self,
         z_tracer: np.ndarray,
         nz_tracer: np.ndarray,
         tracer_name: str,
-        params_values: dict
-    ) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+        params_values: dict,
+    ) -> tuple[np.ndarray, np.ndarray] | None:
         if self.ia_mode is None:
             return None
-        elif self.ia_mode == 'nla':
-            A_IA = params_values['A_IA']
-            eta_IA = params_values['eta_IA']
+        elif self.ia_mode == "nla":
+            A_IA = params_values["A_IA"]
+            eta_IA = params_values["eta_IA"]
             z0_IA = trapezoid(z_tracer * nz_tracer)
             return (z_tracer, A_IA * ((1 + z_tracer) / (1 + z0_IA)) ** eta_IA)
-        elif self.ia_mode == 'nla-perbin':
-            A_IA = params_values[f'{tracer_name}_A_IA']
+        elif self.ia_mode == "nla-perbin":
+            A_IA = params_values[f"{tracer_name}_A_IA"]
             return (z_tracer, A_IA * np.ones_like(z_tracer))
-        elif self.ia_mode == 'nla-noevo':
-            A_IA = params_values['A_IA']
+        elif self.ia_mode == "nla-noevo":
+            A_IA = params_values["A_IA"]
             return (z_tracer, A_IA * np.ones_like(z_tracer))
         return None
