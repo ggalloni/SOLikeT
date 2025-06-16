@@ -32,8 +32,6 @@ If you want to add your own halo model, you can do so by inheriting from the
 function (have a look at the simple pyhalomodel model for ideas).
 """
 
-from typing import Any
-
 import numpy as np
 import pyhalomodel as halo
 from cobaya.theory import Provider, Theory
@@ -100,7 +98,7 @@ class HaloModel_pyhm(HaloModel):
             np.log10(self.Mmin), np.log10(self.Mmax), self.nM
         )
 
-    def get_requirements(self) -> dict[str, Any]:
+    def get_requirements(self) -> dict:
         return {"omegam": None}
 
     def must_provide(self, **requirements) -> dict:
