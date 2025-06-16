@@ -90,8 +90,7 @@ SOLikeT examples and explanatory notebooks are under construction, but will be r
 
 .. code-block:: bash
 
-  cobaya-run examples/example_1.yaml
-
+   cobaya-run examples/example_1.yaml
 
 Developing SOLikeT Theories and Likelihoods
 ===========================================
