@@ -32,8 +32,6 @@ If you want to add your own halo model, you can do so by inheriting from the
 function (have a look at the simple pyhalomodel model for ideas).
 """
 
-from typing import Any
-
 import numpy as np
 import pyhalomodel as halo
 from cobaya.theory import Provider, Theory

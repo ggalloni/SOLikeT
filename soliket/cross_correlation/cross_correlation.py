@@ -5,7 +5,7 @@ data. Makes use of the cobaya CCL module for handling tracers and Limber integra
 :Authors: Pablo Lemos, Ian Harrison.
 """
 
-from typing import Any, ClassVar
+from typing import ClassVar
 
 import numpy as np
 
@@ -35,7 +35,7 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
         self._get_sacc_data()
         self._check_tracers()
 
-    def get_requirements(self) -> dict[str, Any]:
+    def get_requirements(self) -> dict:
         return {"CCL": {"kmax": 10, "nonlinear": True}, "zstar": None}
 
     def _get_CCL_results(self) -> tuple[CCL, dict]:
@@ -69,7 +69,7 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
                     )
 
     def _get_nz(
-        self, z: np.ndarray, tracer: Any, tracer_name: str, **params_values
+        self, z: np.ndarray, tracer, tracer_name: str, **params_values
     ) -> np.ndarray:
         if self.z_nuisance_mode == "deltaz":
             bias = params_values[f"{tracer_name}_deltaz"]

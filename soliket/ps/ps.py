@@ -1,5 +1,3 @@
-from typing import Any
-
 import numpy as np
 from cobaya.theory import Provider
 
@@ -13,7 +11,7 @@ class PSLikelihood(GaussianLikelihood):
     lmax: int = 6000
     provider: Provider
 
-    def get_requirements(self) -> dict[str, dict[str, Any]]:
+    def get_requirements(self) -> dict:
         return {"Cl": {self.kind: self.lmax}}
 
     def _get_Cl(self) -> dict[str, np.ndarray]:
