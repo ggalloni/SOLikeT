@@ -93,13 +93,11 @@ information on how SOLikeT infers these values.
 
 import os
 from collections.abc import Iterable
-from typing import List
 
 import numpy as np
 from cobaya.log import LoggedError
 from cobaya.theories.cosmo import BoltzmannBase
 from cobaya.theory import Theory
-
 
 try:
     import cosmopower as cp
@@ -113,7 +111,6 @@ class CosmoPower(BoltzmannBase):
     _enforce_types: bool = True
 
     def initialize(self):
-
         super().initialize()
 
         if self.network_settings is None:  # pragma: no cover
@@ -283,7 +280,7 @@ class CosmoPower(BoltzmannBase):
 
         return res
 
-    def get_can_support_parameters(self) -> List[str]:
+    def get_can_support_parameters(self) -> list[str]:
         return self.all_parameters
 
     def get_requirements(self) -> Iterable[tuple[str, str]]:
@@ -362,7 +359,7 @@ class CosmoPowerDerived(Theory):
     def get_param(self, p) -> float:
         return self.current_state["derived"][self.translate_param(p)]
 
-    def get_can_support_parameters(self) -> List[str]:
+    def get_can_support_parameters(self) -> list[str]:
         return self.input_parameters
 
     def get_requirements(self) -> Iterable[tuple[str, str]]:

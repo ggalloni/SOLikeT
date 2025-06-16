@@ -2,7 +2,6 @@
 Check that CosmoPower gives the correct Planck CMB power spectrum.
 """
 
-import importlib
 import copy
 import importlib
 import os
@@ -75,11 +74,11 @@ def test_wrong_types(check_skip_cosmopower):
     from soliket.cosmopower import CosmoPower
 
     base_case = {
-        "network_path": "valid_path", 
-        "network_settings": {}, 
-        "stop_at_error": True, 
-        "renames": {}, 
-        "extra_args": {}
+        "network_path": "valid_path",
+        "network_settings": {},
+        "stop_at_error": True,
+        "renames": {},
+        "extra_args": {},
     }
 
     wrong_type_cases = {
@@ -87,7 +86,7 @@ def test_wrong_types(check_skip_cosmopower):
         "network_settings": "not_a_dict",
         "stop_at_error": "not_a_bool",
         "renames": "not_a_dict",
-        "extra_args": "not_a_dict"
+        "extra_args": "not_a_dict",
     }
 
     for key, wrong_value in wrong_type_cases.items():

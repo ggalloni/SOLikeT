@@ -8,7 +8,7 @@ specific survey.
 """
 
 import os
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any
 
 import astropy.io.fits as pyfits
 import astropy.table as atpy
@@ -25,7 +25,7 @@ NemoConfig = Any
 
 def read_clust_cat(
     fitsfile: str, qmin: float
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     list = fits.open(fitsfile)
     data = list[1].data
     SNR = data.field("SNR2p4")
@@ -40,7 +40,7 @@ def read_clust_cat(
 
 def read_mock_cat(
     fitsfile: str, qmin: float
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     list = fits.open(fitsfile)
     data = list[1].data
     SNR = data.field("fixed_SNR")
@@ -54,7 +54,7 @@ def read_mock_cat(
 
 def read_matt_mock_cat(
     fitsfile: str, qmin: float
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     list = fits.open(fitsfile)
     data = list[1].data
     # ra = data.field("RADeg")
@@ -71,7 +71,7 @@ def read_matt_mock_cat(
 
 def read_matt_cat(
     fitsfile: str, qmin: float
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     list = fits.open(fitsfile)
     data = list[1].data
     z = data.field("redshift")
@@ -83,7 +83,7 @@ def read_matt_cat(
     return z[ind], zerr[ind], Y0[ind], Y0err[ind]
 
 
-def loadAreaMask(extName: str, DIR: str) -> Tuple[np.ndarray, WCS]:
+def loadAreaMask(extName: str, DIR: str) -> tuple[np.ndarray, WCS]:
     """Loads the survey area mask (i.e., after edge-trimming and point source masking,
      produced by nemo).
     Returns map array, wcs
@@ -96,13 +96,11 @@ def loadAreaMask(extName: str, DIR: str) -> Tuple[np.ndarray, WCS]:
     return areaMap, wcs
 
 
-def loadRMSmap(extName: str, DIR: str) -> Tuple[np.ndarray, WCS]:
+def loadRMSmap(extName: str, DIR: str) -> tuple[np.ndarray, WCS]:
     """Loads the survey RMS map (produced by nemo).
     Returns map array, wcs
     """
-    areaImg = pyfits.open(
-        os.path.join(DIR, f"RMSMap_Arnaud_M2e14_z0p4{extName}.fits.gz")
-    )
+    areaImg = pyfits.open(os.path.join(DIR, f"RMSMap_Arnaud_M2e14_z0p4{extName}.fits.gz"))
     areaMap = areaImg[0].data
     wcs = WCS(areaImg[0].header)  # , mode="pyfits")
     areaImg.close()
@@ -110,9 +108,7 @@ def loadRMSmap(extName: str, DIR: str) -> Tuple[np.ndarray, WCS]:
     return areaMap, wcs
 
 
-def loadQ(
-    source: Union[NemoConfig, str], tileNames: Optional[List[str]] = None
-) -> dict:
+def loadQ(source: NemoConfig | str, tileNames: list[str] | None = None) -> dict:
     """Load the filter mismatch function Q as a dictionary of spline fits.
     Args:
         source (NemoConfig or str): Either the path to a .fits table (containing Q fits

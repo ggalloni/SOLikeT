@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 
-from typing import Dict, List, Optional, Tuple
 import numpy as np
 from cobaya.functions import chi_squared
 
@@ -72,10 +71,9 @@ class MultiGaussianData(GaussianData):
 
     def __init__(
         self,
-        data_list: List[GaussianData],
-        cross_covs: Optional[Dict[Tuple[str, str], np.ndarray]] = None,
+        data_list: list[GaussianData],
+        cross_covs: dict[tuple[str, str], np.ndarray] | None = None,
     ):
-
         if cross_covs is None:
             cross_covs = {}
 
@@ -100,12 +98,12 @@ class MultiGaussianData(GaussianData):
                 else:
                     cross_covs[key] = np.zeros((len(d1), len(d2)))
 
-        self.data_list: List[GaussianData] = data_list
-        self.lengths: List[int] = [len(d) for d in data_list]
-        self.names: List[str] = [d.name for d in data_list]
-        self.cross_covs: Dict[Tuple[str, str], np.ndarray] = cross_covs
+        self.data_list: list[GaussianData] = data_list
+        self.lengths: list[int] = [len(d) for d in data_list]
+        self.names: list[str] = [d.name for d in data_list]
+        self.cross_covs: dict[tuple[str, str], np.ndarray] = cross_covs
 
-        self._data: Optional[np.ndarray] = None
+        self._data: np.ndarray | None = None
 
     @property
     def data(self) -> GaussianData:
@@ -133,14 +131,14 @@ class MultiGaussianData(GaussianData):
         return self.data.norm_const
 
     @property
-    def labels(self) -> List[str]:
+    def labels(self) -> list[str]:
         return [
             x
             for y in [[name] * len(d) for name, d in zip(self.names, self.data_list)]
             for x in y
         ]
 
-    def _index_range(self, name: str) -> Tuple[int, int]:
+    def _index_range(self, name: str) -> tuple[int, int]:
         if name not in self.names:
             raise ValueError(f"{name} not in {self.names}!")
 

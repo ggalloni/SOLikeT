@@ -32,10 +32,12 @@ If you want to add your own halo model, you can do so by inheriting from the
 function (have a look at the simple pyhalomodel model for ideas).
 """
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
+
 import numpy as np
 import pyhalomodel as halo
 from cobaya.theory import Provider, Theory
+
 # from cobaya.theories.cosmo.boltzmannbase import PowerSpectrumInterpolator
 from scipy.interpolate import RectBivariateSpline
 
@@ -43,9 +45,9 @@ from scipy.interpolate import RectBivariateSpline
 class HaloModel(Theory):
     """Abstract parent class for implementing Halo Models."""
 
-    kmax: Union[int, float]
-    z: Union[float, List[float], np.ndarray]
-    extra_args: Optional[dict]
+    kmax: int | float
+    z: float | list[float] | np.ndarray
+    extra_args: dict | None
 
     _enforce_types: bool = True
 
@@ -136,7 +138,7 @@ class HaloModel_pyhm(HaloModel):
         return needs
 
     def calculate(self, state: dict, want_derived: bool = True, **params_values_dict):
-        pk_mm_lin = self._get_Pk_mm_lin()
+        pk_mm_lin: np.ndarray = self._get_Pk_mm_lin()
 
         # now wish to interpolate sigma_R to these Rs
         zinterp, rinterp, sigma_r_interp = self.provider.get_sigma_R()

@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np
 from cobaya.likelihood import Likelihood
 
@@ -19,7 +17,7 @@ class CashCLikelihood(Likelihood):
         x, N = self._get_data()
         self.data = CashCData(self.name, N)
 
-    def _get_data(self) -> Tuple[np.ndarray, np.ndarray]:
+    def _get_data(self) -> tuple[np.ndarray, np.ndarray]:
         data = np.loadtxt(self.datapath, unpack=False)
         N = data[:, -1]  # assume data stored like column_stack([z, q, N])
         x = data[:, :-1]

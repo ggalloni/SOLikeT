@@ -81,18 +81,17 @@ the likelihood.
 from collections.abc import Sequence
 
 import numpy as np
-
-from typing import Dict, List, Optional, Sequence, Union
 from cobaya.theory import Provider, Theory
 from cobaya.tools import LoggedError
 
 
 class CCL(Theory):
     """A theory code wrapper for CCL."""
-    kmax: Union[int, float]
+
+    kmax: int | float
     nonlinear: bool
-    z: Union[float, List[float], np.ndarray]
-    extra_args: Optional[dict]
+    z: float | list[float] | np.ndarray
+    extra_args: dict | None
 
     _enforce_types: bool = True
 
@@ -154,7 +153,7 @@ class CCL(Theory):
         )
 
         # Dictionary of the things CCL needs from CAMB/CLASS
-        needs: Dict[str, dict] = {}
+        needs: dict[str, dict] = {}
 
         if self.kmax:
             self.nonlinear = self.nonlinear or options.get("nonlinear", False)
@@ -257,5 +256,5 @@ class CCL(Theory):
         for required_result, method in self._required_results.items():
             state["CCL"][required_result] = method(cosmo)
 
-    def get_CCL(self):
+    def get_CCL(self) -> dict:
         return self._current_state["CCL"]
