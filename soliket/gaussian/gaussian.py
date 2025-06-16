@@ -1,4 +1,5 @@
 from typing import Dict, List, Optional, Sequence, Tuple
+from collections.abc import Sequence
 
 import numpy as np
 from cobaya.input import merge_info
@@ -7,8 +8,8 @@ from cobaya.theory import Provider, Theory
 from cobaya.tools import recursive_update
 from cobaya.typing import empty_dict
 
-from soliket.utils import get_likelihood
 from soliket.gaussian.gaussian_data import GaussianData, MultiGaussianData
+from soliket.utils import get_likelihood
 
 
 class GaussianLikelihood(Likelihood):
@@ -56,15 +57,14 @@ class CrossCov(dict):
 
 
 class MultiGaussianLikelihood(GaussianLikelihood):
-    components: Optional[Sequence] = None
-    options: Optional[Sequence] = None
-    cross_cov_path: Optional[str] = None
+    components: Sequence | None = None
+    options: Sequence | None = None
+    cross_cov_path: str | None = None
 
-    def __init__(self, info: dict = empty_dict, **kwargs):
-
-        if 'components' in info:
-            self.likelihoods: List[Likelihood] = [
-                get_likelihood(*kv) for kv in zip(info['components'], info['options'])
+    def __init__(self, info=empty_dict, **kwargs):
+        if "components" in info:
+            self.likelihoods : List[Likelihood] = [
+                get_likelihood(*kv) for kv in zip(info["components"], info["options"])
             ]
 
         default_info: dict = merge_info(
@@ -80,7 +80,7 @@ class MultiGaussianLikelihood(GaussianLikelihood):
         data_list = [like._get_gauss_data() for like in self.likelihoods]
         self.data = MultiGaussianData(data_list, self.cross_cov)
 
-        self.log.info('Initialized.')
+        self.log.info("Initialized.")
 
     def initialize_with_provider(self, provider: Provider):  # pragma: no cover
         for like in self.likelihoods:
@@ -97,8 +97,7 @@ class MultiGaussianLikelihood(GaussianLikelihood):
     def _get_theory(self, **kwargs) -> np.ndarray:
         return np.concatenate([like._get_theory(**kwargs) for like in self.likelihoods])
 
-    def get_requirements(self) -> dict: # pragma: no cover
-
+    def get_requirements(self):  # pragma: no cover
         # Reqs with arguments like 'lmax', etc. may have to be carefully treated here to
         # merge
         reqs = {}

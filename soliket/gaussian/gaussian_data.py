@@ -1,30 +1,38 @@
 from typing import Dict, List, Optional, Sequence, Tuple
 import numpy as np
-from cobaya import functions
+from cobaya.functions import chi_squared
 
 
 class GaussianData:
     """
-     Named multivariate gaussian data
+    Named multivariate gaussian data
     """
+
     name: str  # name identifier for the data
     x: Sequence  # labels for each data point
     y: np.ndarray  # data point values
     cov: np.ndarray  # covariance matrix
     inv_cov: np.ndarray  # inverse covariance matrix
-    ncovsims: Optional[int]  # number of simulations used to estimate covariance
+    ncovsims: int | None  # number of simulations used to estimate covariance
 
-    _fast_chi_squared = staticmethod(functions.chi_squared)
+    _fast_chi_squared = staticmethod(chi_squared)
 
-    def __init__(self, name: str, x: Sequence[float], y: Sequence[float], cov: np.ndarray,
-                 ncovsims: Optional[int] = None):
-
-        self.name: str = str(name)
-        self.ncovsims: Optional[int] = ncovsims
+    def __init__(
+        self,
+        name,
+        x: Sequence,
+        y: Sequence[float],
+        cov: np.ndarray,
+        ncovsims: int | None = None,
+    ):
+        self.name = str(name)
+        self.ncovsims = ncovsims
 
         if not (len(x) == len(y) and cov.shape == (len(x), len(x))):
-            raise ValueError(f"Incompatible shapes! x={len(x)}, y={len(y)}, \
-                               cov={cov.shape}")
+            raise ValueError(
+                f"Incompatible shapes! x={len(x)}, y={len(y)}, \
+                               cov={cov.shape}"
+            )
 
         self.x: Sequence[float] = x
         self.y: np.ndarray = np.ascontiguousarray(y)

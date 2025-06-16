@@ -14,6 +14,7 @@ import astropy.io.fits as pyfits
 import astropy.table as atpy
 import numpy as np
 from astropy.io import fits
+
 # from astLib import astWCS
 from astropy.wcs import WCS
 from scipy import interpolate
@@ -187,12 +188,8 @@ class SurveyData:
 
         if tiles:
             self.filetile = self.nemodir + "/tileAreas.txt"
-            self.tilenames = np.loadtxt(
-                self.filetile, dtype=str, usecols=0, unpack=True
-            )
-            self.tilearea = np.loadtxt(
-                self.filetile, dtype=float, usecols=1, unpack=True
-            )
+            self.tilenames = np.loadtxt(self.filetile, dtype=str, usecols=0, unpack=True)
+            self.tilearea = np.loadtxt(self.filetile, dtype=float, usecols=1, unpack=True)
 
             self.fsky = []
             self.mask = []
