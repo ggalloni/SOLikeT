@@ -1,5 +1,6 @@
 import importlib
 import copy
+import importlib
 import os
 
 import numpy as np
@@ -71,7 +72,6 @@ def test_shearkappa_with_wrong_types(request):
         case[key] = wrong_value
         with pytest.raises(TypeError):
             _ = ShearKappaLikelihood(**case)
-
 
 def test_galaxykappa_model(
     request, check_skip_pyccl, evaluate_one_info, test_cosmology_params

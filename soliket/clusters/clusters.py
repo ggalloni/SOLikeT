@@ -20,6 +20,7 @@ p
 
 import os
 from typing import Dict
+
 import numpy as np
 import pandas as pd
 from cobaya import LoggedError
@@ -30,9 +31,10 @@ from soliket.clusters import massfunc as mf
 from soliket.poisson import PoissonLikelihood
 
 from .survey import SurveyData
-from .sz_utils import SZUtils, trapezoid
 from cobaya import LoggedError
 from cobaya.theory import Provider
+
+from .sz_utils import SZUtils, trapezoid
 
 
 class SZModel:

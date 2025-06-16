@@ -107,8 +107,7 @@ class Linear_bias(Bias):
     _enforce_types: bool = True
     params: dict
 
-    def calculate(self, state: dict, want_derived: bool = True,
-                  **params_values_dict):
+    def calculate(self, state: dict, want_derived: bool = True, **params_values_dict):
         Pk_mm = self._get_Pk_mm()
 
         state["Pk_gg_grid"] = params_values_dict["b_lin"] ** 2.0 * Pk_mm

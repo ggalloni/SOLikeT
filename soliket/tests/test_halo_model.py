@@ -1,6 +1,8 @@
 import importlib
 
 import copy
+import importlib
+
 import numpy as np
 from cobaya.model import get_model
 import pytest
@@ -50,7 +52,6 @@ def test_wrong_types():
         case[key] = wrong_value
         with pytest.raises(TypeError):
             _ = HaloModel_pyhm(**case)
-
 
 def test_pyhalomodel_model(
     evaluate_one_info, test_cosmology_params, check_skip_pyhalomodel

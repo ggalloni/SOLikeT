@@ -2,6 +2,8 @@ import importlib
 
 import copy
 import pytest
+import importlib
+
 import numpy as np
 from cobaya.model import get_model
 

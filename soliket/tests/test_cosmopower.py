@@ -4,10 +4,12 @@ Check that CosmoPower gives the correct Planck CMB power spectrum.
 
 import importlib
 import copy
+import importlib
 import os
 
 import numpy as np
 from cobaya.model import get_model
+import pytest
 
 fiducial_params = {
     "ombh2": 0.0224,

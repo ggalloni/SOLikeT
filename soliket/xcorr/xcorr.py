@@ -81,26 +81,12 @@ class XcorrLikelihood(GaussianLikelihood):
         self.name: str = "Xcorr"
         self.log.info("Initialising.")
 
+        self.dndz_file: str | None = None
+        self.auto_file: str | None = None
+        self.cross_file: str | None = None
+        self.k_tracer_name: str | None = None
+        self.gc_tracer_name: str | None = None
         self.covpath: str | None = None
-
-        check_yaml_types(self, {
-            "auto_file": str,
-            "cross_file": str,
-            "dndz_file": str,
-            "datapath": str,
-            "k_tracer_name": str,
-            "gc_tracer_name": str,
-            "high_ell": int,
-            "nz": int,
-            "Nchi": int,
-            "Nchi_mag": int,
-            "Pk_interp_kmax": (int, float),
-            "b1": (int, float),
-            "s1": (int, float)
-        })
-
-        name: str = "Xcorr"  # noqa F841
-        self.log.info('Initialising.')
 
         if self.datapath is None:
             self.dndz = np.loadtxt(self.dndz_file)

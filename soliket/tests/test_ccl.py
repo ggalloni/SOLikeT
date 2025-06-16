@@ -5,6 +5,9 @@ Check that CCL works correctly.
 import importlib
 
 import copy
+
+import importlib
+
 import numpy as np
 from cobaya.likelihood import Likelihood
 from cobaya.model import get_model

@@ -11,9 +11,9 @@ from .cash_data import CashCData
 
 class CashCLikelihood(Likelihood):
     name: str = "Cash-C"
-    datapath: str | None
 
     _enforce_types: bool = True
+    datapath: str | None
 
     def initialize(self):
         x, N = self._get_data()

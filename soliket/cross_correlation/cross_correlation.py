@@ -8,7 +8,6 @@ data. Makes use of the cobaya CCL module for handling tracers and Limber integra
 from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
 import numpy as np
 
-
 try:
     from numpy import trapezoid
 except ImportError:
@@ -32,7 +31,6 @@ class CrossCorrelationLikelihood(GaussianLikelihood):
     provider: Provider
 
     def initialize(self):
-
         self._get_sacc_data()
         self._check_tracers()
 

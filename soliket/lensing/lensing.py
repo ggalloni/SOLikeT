@@ -198,15 +198,16 @@ class LensingLikelihood(BinnedPSLikelihood, InstallableLikelihood):
         return bin_centers, self.y
 
     def _get_cov(self) -> np.ndarray:
-        bin_centers, bandpowers, cov = \
-            self.sacc.get_ell_cl(None, 'ck', 'ck', return_cov=True)
+        bin_centers, bandpowers, cov = self.sacc.get_ell_cl(
+            None, "ck", "ck", return_cov=True
+        )
         self.cov = cov
         return cov
 
     def _get_binning_matrix(self) -> np.ndarray:
-
-        bin_centers, bandpowers, cov, ind = \
-            self.sacc.get_ell_cl(None, 'ck', 'ck', return_cov=True, return_ind=True)
+        bin_centers, bandpowers, cov, ind = self.sacc.get_ell_cl(
+            None, "ck", "ck", return_cov=True, return_ind=True
+        )
         bpw = self.sacc.get_bandpower_windows(ind)
         binning_matrix = bpw.weight.T
         self.binning_matrix = binning_matrix

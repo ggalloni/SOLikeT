@@ -81,6 +81,7 @@ the likelihood.
 from collections.abc import Sequence
 
 import numpy as np
+
 from typing import Dict, List, Optional, Sequence, Union
 from cobaya.theory import Provider, Theory
 from cobaya.tools import LoggedError
@@ -123,6 +124,7 @@ class CCL(Theory):
                 self.log, "Could not import ccl. Install pyccl to use ccl."
             ) from e
 
+        self.ccl = ccl
         self._var_pairs = set()
         self._required_results = {}
 

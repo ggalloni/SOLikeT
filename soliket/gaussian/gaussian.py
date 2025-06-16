@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 from cobaya.input import merge_info
@@ -60,7 +60,7 @@ class MultiGaussianLikelihood(GaussianLikelihood):
 
     def __init__(self, info=empty_dict, **kwargs):
         if "components" in info:
-            self.likelihoods = [
+            self.likelihoods : List[Likelihood] = [
                 get_likelihood(*kv) for kv in zip(info["components"], info["options"])
             ]
 
