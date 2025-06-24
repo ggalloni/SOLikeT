@@ -55,10 +55,8 @@ jobs:
           echo "Publishing to ${{ steps.choose.outputs.REPO }}..."
           if [ "${{ steps.choose.outputs.REPO }}" = "testpypi" ]; then
             UV_PUBLISH_URL=https://test.pypi.org/legacy/ \
-            uv publish --token "${{ secrets.TEST_PYPI_TOKEN }}"
-          else
-            uv publish --token "${{ secrets.PYPI_API_TOKEN }}"
           fi
+          uv publish
         env:
           # optional extra debug
           GITHUB_REF: ${{ github.ref }}
