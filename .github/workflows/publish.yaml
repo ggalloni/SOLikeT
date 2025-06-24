@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "Publishing to ${{ steps.choose.outputs.REPO }}..."
           if [ "${{ steps.choose.outputs.REPO }}" = "testpypi" ]; then
-            UV_PUBLISH_URL=https://test.pypi.org/legacy/ \
+            export UV_PUBLISH_URL=https://test.pypi.org/legacy/
           fi
           uv publish
         env:
