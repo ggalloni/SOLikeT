@@ -18,11 +18,25 @@ on:
           - pypi
 
 jobs:
+  choose-target:
+    runs-on: ubuntu-latest
+    outputs:
+      repo: ${{ steps.pick.outputs.repo }}
+    steps:
+      - id: pick
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "repo=${{ github.event.inputs.repository }}" >> $GITHUB_OUTPUT
+          else
+            echo "repo=pypi" >> $GITHUB_OUTPUT
+          fi
+
   publish:
+    needs: choose-target
     name: 📦 Publish to ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.repository || 'pypi' }}
     runs-on: ubuntu-latest
     environment:
-      name: ${{ steps.choose.outputs.REPO }}
+      name: ${{ steps.pick.outputs.repo }}
     permissions:
       id-token: write
 
@@ -41,21 +55,10 @@ jobs:
       - name: Build with uv
         run: uv build
 
-      - name: Determine target
-        id: choose
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "REPO=${{ github.event.inputs.repository }}" >> $GITHUB_OUTPUT
-          else
-            # on a real Release, always push to PyPI
-            echo "REPO=pypi" >> $GITHUB_OUTPUT
-          fi
-        shell: bash
-
       - name: Publish
         run: |
-          echo "Publishing to ${{ steps.choose.outputs.REPO }}..."
-          if [ "${{ steps.choose.outputs.REPO }}" = "testpypi" ]; then
+          echo "Publishing to ${{ steps.pick.outputs.repo }}..."
+          if [ "${{ steps.pick.outputs.repo }}" = "testpypi" ]; then
             export UV_PUBLISH_URL=https://test.pypi.org/legacy/
           fi
           uv publish
