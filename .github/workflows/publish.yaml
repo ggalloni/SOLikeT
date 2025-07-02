@@ -36,7 +36,7 @@ jobs:
     name: 📦 Publish to ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.repository || 'pypi' }}
     runs-on: ubuntu-latest
     environment:
-      name: ${{ steps.pick.outputs.repo }}
+      name: ${{ needs.choose-target.outputs.repo }}
     permissions:
       id-token: write
 
