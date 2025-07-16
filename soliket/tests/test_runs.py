@@ -47,8 +47,8 @@ def test_installation(lhood):
         "lensing",
         "lensing_lite",
         "multi",
-        # "galaxykappa",
-        # "shearkappa"
+        "galaxykappa",
+        "shearkappa",
         # "xcorr"
     ],
 )
@@ -59,6 +59,8 @@ def test_evaluate(lhood):
 
     if lhood == "multi":
         pytest.importorskip("mflike", reason="Couldn't import 'mflike' module")
+    elif "kappa" in lhood:
+        pytest.importorskip(modname="pyccl", reason="Couldn't import 'pyccl' module")
 
     install(info, path=packages_path, skip_global=True, no_set_global=True)
 
@@ -71,18 +73,20 @@ def test_evaluate(lhood):
         "lensing",
         "lensing_lite",
         "multi",
-        # "galaxykappa",
-        # "shearkappa"
+        "galaxykappa",
+        "shearkappa",
         # "xcorr"
     ],
 )
 def test_mcmc(lhood):
     info = yaml_load(pkgutil.get_data("soliket", f"tests/test_{lhood}.yaml"))
     info["force"] = True
-    info["sampler"] = {"mcmc": {"max_samples": 10, "max_tries": 1000}}
+    info["sampler"] = {"mcmc": {"max_samples": 5, "max_tries": 100}}
 
     if lhood == "multi":
         pytest.importorskip("mflike", reason="Couldn't import 'mflike' module")
+    elif "kappa" in lhood:
+        pytest.importorskip(modname="pyccl", reason="Couldn't import 'pyccl' module")
 
     install(info, path=packages_path, skip_global=True, no_set_global=True)
 
