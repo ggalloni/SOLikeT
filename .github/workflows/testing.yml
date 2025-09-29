@@ -67,10 +67,26 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install GSL
+        if: matrix.os != 'windows-latest'
+        run: |
+          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+            sudo apt-get update
+            sudo apt-get install -y libgsl-dev
+          elif [ "${{ matrix.os }}" = "macos-latest" ]; then
+            brew update
+            brew install gsl
+          fi
+
+      - name: Install uv and set the Python version
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
       - name: Install SOLikeT dependencies and likelihoods
         run: |
-          pip install uv
-          bash ci_scripts/install_deps.sh --extras dev all --python ${{ matrix.python-version }}
+          bash ci_scripts/install_deps.sh --extras dev all
 
       - name: Run tests (coverage)
         if: contains(matrix.tags, 'cov')
